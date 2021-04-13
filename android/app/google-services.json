@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1042276140561",
+    "project_id": "aburrinator-3b770",
+    "storage_bucket": "aburrinator-3b770.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042276140561:android:d6b434a681e6f24f6e53b0",
+        "android_client_info": {
+          "package_name": "com.thepotatocamera.aburrinator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1042276140561-e98049tcqk3h6en3a6i5ob72hldkutf9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thepotatocamera.aburrinator",
+            "certificate_hash": "2a611398c35c6a60688d97acedbf5e0b45cac807"
+          }
+        },
+        {
+          "client_id": "1042276140561-6igls6a3qtt3ums8k6qpep39f51glccj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfZUGK619V27djjFIC8ESUiH-xVlrGtgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1042276140561-6igls6a3qtt3ums8k6qpep39f51glccj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
