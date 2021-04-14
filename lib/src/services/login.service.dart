@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'contador_page.dart';
+import '../pages/contador.page.dart';
 
 class LoginProcess extends StatefulWidget {
 

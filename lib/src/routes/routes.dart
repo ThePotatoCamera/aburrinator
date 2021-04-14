@@ -1,5 +1,5 @@
-import 'package:aburrinator/src/pages/contador_page.dart';
-import 'package:aburrinator/src/pages/login_page.dart';
+import 'package:aburrinator/src/pages/contador.page.dart';
+import 'package:aburrinator/src/pages/auth/login.page.dart';
 import 'package:flutter/material.dart';
 
 Map<String, WidgetBuilder> getApplicationRoutes() {

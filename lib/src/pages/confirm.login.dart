@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 
-import 'account_page.dart';
+import 'account.page.dart';
 
 class ConfirmPage extends StatefulWidget {
 

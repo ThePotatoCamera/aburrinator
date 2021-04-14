@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   email_validator: ^2.0.1
   rounded_loading_button: ^1.0.18
+  sqflite: ^2.0.0+3
+  path: ^1.8.0
+  uuid: ^3.0.4
 
 dev_dependencies:
   flutter_test:

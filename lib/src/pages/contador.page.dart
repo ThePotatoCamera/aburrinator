@@ -1,4 +1,5 @@
-import 'package:aburrinator/src/pages/account_page.dart';
+import 'package:aburrinator/src/pages/account.page.dart';
+import 'package:aburrinator/src/pages/helpers/database.helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 
@@ -8,9 +9,23 @@ class ContadorPage extends StatefulWidget {
   createState() => _ContadorPageState();
 }
 
-class _ContadorPageState extends State<ContadorPage> {
+class _ContadorPageState extends State<ContadorPage> with WidgetsBindingObserver {
 
+  String uid;
   int _contador = 0;
+
+  final dbHelper = DatabaseHelper.instance;
+
+
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      var data = await _loadData();
+      print(data);
+      // uid = data["id"];
+      // _contador = data["contador"];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,5 +84,9 @@ class _ContadorPageState extends State<ContadorPage> {
     });
   }
 
-}
+  _loadData() async {
+    final allRows = await dbHelper.queryAllRows();
+    print(allRows);
+  }
 
+}

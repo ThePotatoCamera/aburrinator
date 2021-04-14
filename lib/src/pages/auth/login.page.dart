@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'package:aburrinator/src/pages/login_process.dart';
-import 'package:aburrinator/src/pages/lostpass_page.dart';
-import 'package:aburrinator/src/pages/register_process.dart';
+import 'package:aburrinator/src/services/login.service.dart';
+import 'package:aburrinator/src/services/register.service.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 
-import 'account_page.dart';
+import '../account.page.dart';
 
 class LoginPage extends StatefulWidget {
 
@@ -31,12 +30,13 @@ class _LoginPageState extends State<LoginPage> {
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
-          if (user == null) {
-            return;
-          } else {
-            print(user);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AccountAdmin()));
-          }
+      if (user == null) {
+        return;
+      } else {
+        print(user);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AccountAdmin()));
+      }
     });
   }
 
@@ -59,25 +59,19 @@ class _LoginPageState extends State<LoginPage> {
                 _loginEmail(),
                 _loginPass(),
                 Container(
-                  margin: EdgeInsets.all(20),
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _loginButton(),
-                          _registerButton()
-                        ],
-                      ),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     _lostPassButton()
-                      //   ],
-                      // )
-                    ],
-                  )
+                    margin: EdgeInsets.all(20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _loginButton(),
+                            _registerButton()
+                          ],
+                        ),
+                      ],
+                    )
                 )
               ],
             ),
@@ -126,52 +120,45 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginButton() {
     return OutlinedButton(
-      child: Text("Iniciar sesión"),
-      onPressed: () {
-        String _mailText = _mailController.text;
-        String _passText = _passController.text;
+        child: Text("Iniciar sesión"),
+        onPressed: () {
+          String _mailText = _mailController.text;
+          String _passText = _passController.text;
 
-        if (_formKey.currentState.validate()) {
-          var _key = utf8.encode(_mailText);
-          var _bytes = utf8.encode(_passText);
+          if (_formKey.currentState.validate()) {
+            var _key = utf8.encode(_mailText);
+            var _bytes = utf8.encode(_passText);
 
-          var _hmac = Hmac(sha512, _key);
-          var _passDigest = _hmac.convert(_bytes);
-          print(_mailText);
-          print(_passDigest.toString());
-          Navigator.push(context, MaterialPageRoute(builder: (builder) => LoginProcess(mail: _mailText, pass: _passDigest.toString(),)));
-        }
-    });
+            var _hmac = Hmac(sha512, _key);
+            var _passDigest = _hmac.convert(_bytes);
+            print(_mailText);
+            print(_passDigest.toString());
+            Navigator.push(context, MaterialPageRoute(builder: (builder) =>
+                LoginProcess(mail: _mailText, pass: _passDigest.toString(),)));
+          }
+        });
   }
 
   Widget _registerButton() {
     return OutlinedButton(
-      child: Text("Registrarse"),
-      onPressed: () {
-        String _mailText = _mailController.text;
-        String _passText = _passController.text;
-
-        if (_formKey.currentState.validate()) {
-          var _key = utf8.encode(_mailText);
-          var _bytes = utf8.encode(_passText);
-
-          var _hmac = Hmac(sha512, _key);
-          var _passDigest = _hmac.convert(_bytes);
-          print(_mailText);
-          print(_passDigest.toString());
-          Navigator.push(context, MaterialPageRoute(builder: (builder) => RegisterProcess(mail: _mailText, pass: _passDigest.toString(),)));
-        }
-      }
-    );
-  }
-
-  Widget _lostPassButton() {
-    return OutlinedButton(
+        child: Text("Registrarse"),
         onPressed: () {
           String _mailText = _mailController.text;
-          Navigator.push(context, MaterialPageRoute(builder: (builder) => PassOlvidada()));
-        },
-        child: Text("¿Contraseña olvidada?")
+          String _passText = _passController.text;
+
+          if (_formKey.currentState.validate()) {
+            var _key = utf8.encode(_mailText);
+            var _bytes = utf8.encode(_passText);
+
+            var _hmac = Hmac(sha512, _key);
+            var _passDigest = _hmac.convert(_bytes);
+            print(_mailText);
+            print(_passDigest.toString());
+            Navigator.push(context, MaterialPageRoute(builder: (builder) =>
+                RegisterProcess(
+                  mail: _mailText, pass: _passDigest.toString(),)));
+          }
+        }
     );
   }
 }
