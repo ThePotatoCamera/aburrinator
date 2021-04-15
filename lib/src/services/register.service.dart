@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterProcess extends StatefulWidget {
 
-
   final String mail;
   final String pass;
 

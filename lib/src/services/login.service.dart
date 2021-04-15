@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../pages/contador.page.dart';
 
 class LoginProcess extends StatefulWidget {
-
 
   final String mail;
   final String pass;
@@ -17,9 +18,10 @@ class LoginProcess extends StatefulWidget {
 
 class _LoginProcessState extends State<LoginProcess> {
 
+  final progreso = GetStorage("contador");
+
   @override
   void initState() {
-
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       signin();
@@ -47,6 +49,7 @@ class _LoginProcessState extends State<LoginProcess> {
           return;
         }
         print(loginUser);
+        _loadFirebaseData(loginUser.user.uid);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text("Sesión iniciada con éxito"),
@@ -81,6 +84,27 @@ class _LoginProcessState extends State<LoginProcess> {
       Navigator.pop(context);
     }
   }
+
+  void _loadFirebaseData(loginUser) async {
+    CollectionReference usuarios = FirebaseFirestore.instance.collection("usuarios");
+
+    if (usuarios.doc(progreso.read("uuid")) == null) {
+      Map<String, dynamic> localData = {
+        "saveid": progreso.read("uuid"),
+        "contador": progreso.read("contador"),
+        "uuid": loginUser,
+      };
+      return usuarios
+          .doc(progreso.read("uuid"))
+          .set(localData)
+          .then((value) => print("Se han creado los datos del usuario en $loginUser"));
+    }
+    else {
+      Map<String, dynamic> data = (await usuarios.doc(progreso.read("uuid")).get()) as Map<String, dynamic>;
+      progreso.write("uuid", data["uuid"]);
+      progreso.write("contador", data["contador"]);
+    }
+    }
 
   @override
   Widget build(BuildContext context) {

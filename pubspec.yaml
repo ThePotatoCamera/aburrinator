@@ -23,11 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  path_provider: "^2.0.1"
   firebase_core: "^0.7.0"
   firebase_analytics: "^7.0.1"
   firebase_auth: "^0.20.1"
-  firebase_database: "^6.0.0"
   crypto: "^3.0.1"
 
 
@@ -35,10 +33,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   email_validator: ^2.0.1
-  rounded_loading_button: ^1.0.18
-  sqflite: ^2.0.0+3
   path: ^1.8.0
   uuid: ^3.0.4
+  get: ^4.1.4
+  get_storage: ^2.0.2
+  cloud_firestore: ^0.16.0+1
 
 dev_dependencies:
   flutter_test:

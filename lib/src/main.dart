@@ -1,8 +1,15 @@
 import 'package:aburrinator/src/routes/routes.dart';
 import 'package:flutter/material.dart';
 import "package:firebase_core/firebase_core.dart";
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:uuid/uuid.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  await GetStorage.init("contador");
+  _generateUuid();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
 
@@ -15,10 +22,12 @@ class MyApp extends StatelessWidget {
             return fatalError();
           }
           if (snapshot.connectionState == ConnectionState.done) {
-            return MaterialApp(
+            return GetMaterialApp(
               title: 'Aburrinator',
               initialRoute: "/",
               routes: getApplicationRoutes(),
+              locale: Get.deviceLocale,
+              fallbackLocale: Locale("es", "ES"),
             );
           }
           return loading();
@@ -38,10 +47,25 @@ class MyApp extends StatelessWidget {
   }
 
   Widget loading() {
-    return Material(
-      child: Center(
-        child: CircularProgressIndicator(),
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }
+}
+
+void _generateUuid() async {
+
+  final progreso = GetStorage("contador");
+  var uuid = Uuid();
+
+  if (!progreso.hasData("uuid")) {
+    var userid = uuid.v1();
+    await progreso.write("uuid", userid);
+    print(progreso.read("uuid"));
+  }
+  print(progreso.read("uuid"));
 }
