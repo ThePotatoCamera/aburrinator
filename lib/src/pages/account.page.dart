@@ -47,12 +47,13 @@ class _AccountAdminState extends State<AccountAdmin> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              _loadProgress(),
               _deleteProgress(),
               _deleteAccount(),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  _userID()
+                  _userId(),
                 ],
               )
             ],
@@ -61,7 +62,16 @@ class _AccountAdminState extends State<AccountAdmin> {
       ),
     );
   }
-  
+
+  Widget _loadProgress() {
+    return OutlinedButton(
+      child: Text("Cargar tus datos"),
+      onPressed: () {
+        _loadData(FirebaseAuth.instance.currentUser.uid);
+      },
+    );
+  }
+
   Widget _deleteAccount() {
     String _mail = FirebaseAuth.instance.currentUser.email;
 
@@ -86,7 +96,7 @@ class _AccountAdminState extends State<AccountAdmin> {
     );
   }
 
-  Widget _userID() {
+  Widget _userId() {
     return Text("Tu UID es\n" + FirebaseAuth.instance.currentUser.uid.toString(),
         textAlign: TextAlign.center);
   }
@@ -103,7 +113,7 @@ class _AccountAdminState extends State<AccountAdmin> {
                 children: <Widget>[
                   Text("¿Estás seguro de eliminar tu cuenta?"),
                   Text("Perderás todo el progreso en la nube."),
-                  Text("Esta acción es irreversible."),
+                  Text("\nEsta acción es irreversible."),
                 ],
               ),
             ),
@@ -176,8 +186,8 @@ class _AccountAdminState extends State<AccountAdmin> {
               child: ListBody(
                 children: <Widget>[
                   Text("¿Estás seguro de eliminar tu progreso?"),
-                  Text("Perderás todo el progreso en la nube."),
-                  Text("Esta acción es irreversible."),
+                  Text("Perderás todo el progreso."),
+                  Text("\nEsta acción es irreversible."),
                 ],
               ),
             ),
@@ -191,10 +201,9 @@ class _AccountAdminState extends State<AccountAdmin> {
                   try {
                     final _progreso = GetStorage("contador");
                     usuarios.doc(_progreso.read("uuid")).delete();
-                    await FirebaseAuth.instance.currentUser.delete();
                     ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text("Se ha eliminado tu cuenta con éxito."),
+                          content: Text("Se ha eliminado tu progreso con éxito."),
                           duration: Duration(seconds: 2),
                           backgroundColor: Colors.red,
                         ));
@@ -205,25 +214,6 @@ class _AccountAdminState extends State<AccountAdmin> {
                     );
                   } catch (e) {
                     print(e);
-                    if (e.code == "requires-recent-login") {
-                      final _result = await Navigator.push(context, MaterialPageRoute(builder: (builder) => ConfirmPage()));
-                      if (_result == true) {
-                        final _progreso = GetStorage("contador");
-                        usuarios.doc(_progreso.read("uuid")).delete();
-                        await FirebaseAuth.instance.currentUser.delete();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Se ha eliminado tu cuenta con éxito."),
-                              duration: Duration(seconds: 2),
-                              backgroundColor: Colors.red,
-                            ));
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => ContadorPage()),
-                              (Route<dynamic> route) => false,
-                        );
-                      }
-                    }
                   }
                 },
               ),
@@ -238,4 +228,34 @@ class _AccountAdminState extends State<AccountAdmin> {
         }
     );
   }
+
+  _loadData(loginUser) {
+    final _progreso = GetStorage("contador");
+    FirebaseFirestore.instance.collection("usuarios")
+        .doc(loginUser)
+        .get()
+        .then((DocumentSnapshot value) {
+      if (value.exists) {
+        var data = value.data();
+        if (_progreso.read("contador") < data["contador"] || _progreso.read("contador") == null) {
+          _progreso.write("contador", data["contador"]);
+        }
+        else {}
+      } else {
+        print("Error al leer los datos desde Firebase, el documento no existe");
+      }
+    });
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => ContadorPage()),
+          (Route<dynamic> route) => false,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Se han cargado los datos de la nube."),
+          duration: Duration(seconds: 2),
+        )
+    );
+  }
+
 }

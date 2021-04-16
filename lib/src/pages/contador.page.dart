@@ -18,7 +18,17 @@ class _ContadorPageState extends State<ContadorPage> {
 
   String uid;
   int _contador = 0;
-  bool _firstInit = false;
+  int total = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        total = getContador();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +57,7 @@ class _ContadorPageState extends State<ContadorPage> {
             children: [
               Text(
                 "Tu nivel de aburrimiento:", style: TextStyle(fontSize: 25),),
-              Text("${getContador()}",
+              Text("$total",
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),)
             ],
           ),
@@ -85,14 +95,14 @@ class _ContadorPageState extends State<ContadorPage> {
 
   void _adicion() {
     setState(() {
-      _contador ++;
-      progreso.write("contador", _contador);
+      total ++;
+      progreso.write("contador", total);
     });
   }
 
   void _restart() {
     setState(() {
-      _contador = 0;
+      total = 0;
       progreso.write("contador", 0);
     });
   }
@@ -108,32 +118,32 @@ class _ContadorPageState extends State<ContadorPage> {
   }
 
   getContador() {
-    if (_firstInit == false) {
       if (progreso.hasData("contador")) {
         _contador = progreso.read("contador");
       }
       else {
-        _contador = 0;
         progreso.write("contador", 0);
       }
-      _firstInit = true;
-    }
-    return _contador;
+      return _contador;
   }
 
   void _guardarNube() {
     setState(() {
       final loginUser = FirebaseAuth.instance.currentUser.uid;
       Map<String, dynamic> localData = {
-        "saveid": progreso.read("uuid"),
         "contador": progreso.read("contador"),
-        "uuid": loginUser
       };
-      return usuarios
-          .doc(progreso.read("uuid"))
+      usuarios
+          .doc(loginUser)
           .set(localData)
           .then((value) =>
           print("Se han guardado los datos del usuario en $loginUser"));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Se ha guardado tu progreso con éxito."),
+            duration: Duration(seconds: 2),
+          )
+      );
     });
   }
 }

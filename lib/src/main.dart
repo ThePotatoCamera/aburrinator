@@ -2,12 +2,8 @@ import 'package:aburrinator/src/routes/routes.dart';
 import 'package:flutter/material.dart';
 import "package:firebase_core/firebase_core.dart";
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:uuid/uuid.dart';
 
 void main() async {
-  await GetStorage.init("contador");
-  _generateUuid();
   runApp(MyApp());
 }
 
@@ -55,17 +51,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-
-void _generateUuid() async {
-
-  final progreso = GetStorage("contador");
-  var uuid = Uuid();
-
-  if (!progreso.hasData("uuid")) {
-    var userid = uuid.v1();
-    await progreso.write("uuid", userid);
-    print(progreso.read("uuid"));
-  }
-  print(progreso.read("uuid"));
 }

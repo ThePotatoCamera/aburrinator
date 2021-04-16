@@ -49,7 +49,7 @@ class _LoginProcessState extends State<LoginProcess> {
           return;
         }
         print(loginUser);
-        _loadFirebaseData(loginUser.user.uid);
+        await _loadFirebaseData(loginUser.user.uid);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text("Sesión iniciada con éxito"),
@@ -59,7 +59,7 @@ class _LoginProcessState extends State<LoginProcess> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => ContadorPage()),
-          (Route<dynamic> route) => false,
+              (Route<dynamic> route) => false,
         );
       }
     } catch (e) {
@@ -85,24 +85,20 @@ class _LoginProcessState extends State<LoginProcess> {
     }
   }
 
-  void _loadFirebaseData(loginUser) async {
+  _loadFirebaseData(loginUser) async {
     CollectionReference usuarios = FirebaseFirestore.instance.collection("usuarios");
 
     if (usuarios.doc(progreso.read("uuid")) == null) {
       Map<String, dynamic> localData = {
-        "saveid": progreso.read("uuid"),
         "contador": progreso.read("contador"),
-        "uuid": loginUser,
       };
       return usuarios
-          .doc(progreso.read("uuid"))
+          .doc(loginUser)
           .set(localData)
           .then((value) => print("Se han creado los datos del usuario en $loginUser"));
     }
     else {
-      Map<String, dynamic> data = (await usuarios.doc(progreso.read("uuid")).get()) as Map<String, dynamic>;
-      progreso.write("uuid", data["uuid"]);
-      progreso.write("contador", data["contador"]);
+      await readData(loginUser);
     }
     }
 
@@ -113,5 +109,22 @@ class _LoginProcessState extends State<LoginProcess> {
         child: CircularProgressIndicator(),
       ),
     );
+  }
+
+  Future<void> readData(loginUser) async {
+    FirebaseFirestore.instance.collection("usuarios")
+        .doc(loginUser)
+        .get()
+        .then((DocumentSnapshot value) {
+          if (value.exists) {
+            var data = value.data();
+            if (progreso.read("contador") < data["contador"] || progreso.read("contador") == null) {
+              progreso.write("contador", data["contador"]);
+            }
+            else {}
+          } else {
+            print("Error al leer los datos desde Firebase, el documento no existe");
+          }
+    });
   }
 }
