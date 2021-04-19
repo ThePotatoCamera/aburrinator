@@ -24,7 +24,7 @@ jobs:
       with:
         flutter-version: '2.0.4'
     - run: flutter pub get
-    - run: flutter build apk /lib/src/main.dart
+    - run: flutter build apk lib/src/main.dart
     - uses: actions/upload-artifact@v2.2.3
       with:
         name: Builds
