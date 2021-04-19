@@ -6,6 +6,10 @@ import "package:flutter/material.dart";
 
 class ContadorPage extends StatefulWidget {
 
+  final int contador;
+
+  ContadorPage(this.contador);
+
   @override
   createState() => _ContadorPageState();
 }
@@ -18,14 +22,14 @@ class _ContadorPageState extends State<ContadorPage> {
 
   String uid;
   int _contador = 0;
-  int total = 0;
+  bool _saveBtn = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
-        total = getContador();
+        _contador = getContador();
       });
     });
   }
@@ -57,7 +61,7 @@ class _ContadorPageState extends State<ContadorPage> {
             children: [
               Text(
                 "Tu nivel de aburrimiento:", style: TextStyle(fontSize: 25),),
-              Text("$total",
+              Text("$_contador",
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),)
             ],
           ),
@@ -70,13 +74,13 @@ class _ContadorPageState extends State<ContadorPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        SizedBox(width: 30,),
+        SizedBox(width: 30),
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton(child: Icon(Icons.refresh),
               onPressed: _restart,
-              heroTag: "refreshbtn",),
+              heroTag: "refreshbtn"),
           ],
         ),
         Expanded(child: SizedBox()),
@@ -84,9 +88,11 @@ class _ContadorPageState extends State<ContadorPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             _showCloudSave(),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             FloatingActionButton(
-              child: Icon(Icons.add), onPressed: _adicion, heroTag: "addbtn",),
+              child: Icon(Icons.add),
+              onPressed: _adicion,
+              heroTag: "addbtn"),
           ],
         )
       ],
@@ -95,34 +101,43 @@ class _ContadorPageState extends State<ContadorPage> {
 
   void _adicion() {
     setState(() {
-      total ++;
-      progreso.write("contador", total);
+      _contador ++;
+      progreso.write("contador", _contador);
+      _saveBtn = true;
     });
   }
 
   void _restart() {
     setState(() {
-      total = 0;
+      _contador = 0;
       progreso.write("contador", 0);
+      _saveBtn = true;
     });
   }
 
   Widget _showCloudSave() {
     if (FirebaseAuth.instance.currentUser != null) {
-      return FloatingActionButton(
-        child: Icon(Icons.cloud_upload),
-        onPressed: _guardarNube,
-        heroTag: "guardarbtn",);
+      return new Visibility(
+        visible: _saveBtn,
+        child: new FloatingActionButton(
+          child: Icon(Icons.cloud_upload),
+          onPressed:() => _guardarNube(),
+        )
+      );
     }
     return Container();
   }
 
   getContador() {
-      if (progreso.hasData("contador")) {
-        _contador = progreso.read("contador");
-      }
-      else {
-        progreso.write("contador", 0);
+      _contador = widget.contador;
+      if (_contador == null) {
+        if (progreso.hasData("contador")) {
+          _contador = progreso.read("contador");
+        }
+        else {
+          _contador = 0;
+          progreso.write("contador", 0);
+        }
       }
       return _contador;
   }
@@ -140,10 +155,11 @@ class _ContadorPageState extends State<ContadorPage> {
           print("Se han guardado los datos del usuario en $loginUser"));
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Se ha guardado tu progreso con éxito."),
+            content: Text("Se ha guardado tu progreso con éxito"),
             duration: Duration(seconds: 2),
           )
       );
+      _saveBtn = false;
     });
   }
 }

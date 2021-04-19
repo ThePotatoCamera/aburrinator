@@ -1,6 +1,7 @@
 import 'package:aburrinator/src/pages/contador.page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_storage/get_storage.dart';
 
 class RegisterProcess extends StatefulWidget {
 
@@ -14,6 +15,8 @@ class RegisterProcess extends StatefulWidget {
 }
 
 class _RegisterProcessState extends State<RegisterProcess> {
+
+  final _progreso = GetStorage("contador");
 
   @override
   void initState() {
@@ -52,7 +55,7 @@ class _RegisterProcessState extends State<RegisterProcess> {
         }
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => ContadorPage()),
+            MaterialPageRoute(builder: (context) => ContadorPage(_progreso.read("contrador"))),
               (Route<dynamic> route) => false,
         );
       }

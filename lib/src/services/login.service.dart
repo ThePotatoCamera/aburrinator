@@ -56,9 +56,23 @@ class _LoginProcessState extends State<LoginProcess> {
               duration: Duration(seconds: 2)
           )
         );
+        final _progreso = GetStorage("contador");
+        FirebaseFirestore.instance.collection("usuarios")
+            .doc(FirebaseAuth.instance.currentUser.uid)
+            .get()
+            .then((DocumentSnapshot value) async {
+              if (value.exists) {
+                var data = value.data();
+                if (_progreso.read("contador") < data["contador"] || _progreso.read("contador") == null) {
+                  await _progreso.write("contador", data["contador"]);
+                }
+              } else {
+                print("Error al leer los datos desde Firebase, el documento no existe");
+              }
+        });
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ContadorPage()),
+          MaterialPageRoute(builder: (context) => ContadorPage(_progreso.read("contador"))),
               (Route<dynamic> route) => false,
         );
       }

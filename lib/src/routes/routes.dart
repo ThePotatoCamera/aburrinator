@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 Map<String, WidgetBuilder> getApplicationRoutes() {
   final rutas = <String, WidgetBuilder>{
-    "/": (BuildContext context) => ContadorPage(),
+    "/": (BuildContext context) => ContadorPage(0),
     "login": (BuildContext context) => LoginPage()
   };
 

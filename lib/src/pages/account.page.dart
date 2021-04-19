@@ -16,6 +16,8 @@ class _AccountAdminState extends State<AccountAdmin> {
 
   CollectionReference usuarios = FirebaseFirestore.instance.collection("usuarios");
 
+  final _progreso = GetStorage("contador");
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +36,7 @@ class _AccountAdminState extends State<AccountAdmin> {
                 );
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => ContadorPage()),
+                  MaterialPageRoute(builder: (context) => ContadorPage(_progreso.read("contador"))),
                       (Route<dynamic> route) => false,
                 );
               }
@@ -136,7 +138,7 @@ class _AccountAdminState extends State<AccountAdmin> {
                         ));
                     Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => ContadorPage()),
+                        MaterialPageRoute(builder: (context) => ContadorPage(_progreso.read("contador"))),
                         (Route<dynamic> route) => false,
                     );
                   } catch (e) {
@@ -155,7 +157,7 @@ class _AccountAdminState extends State<AccountAdmin> {
                             ));
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => ContadorPage()),
+                          MaterialPageRoute(builder: (context) => ContadorPage(_progreso.read("contador"))),
                               (Route<dynamic> route) => false,
                         );
                       }
@@ -209,7 +211,7 @@ class _AccountAdminState extends State<AccountAdmin> {
                         ));
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => ContadorPage()),
+                      MaterialPageRoute(builder: (context) => ContadorPage(0)),
                           (Route<dynamic> route) => false,
                     );
                   } catch (e) {
@@ -234,25 +236,24 @@ class _AccountAdminState extends State<AccountAdmin> {
     FirebaseFirestore.instance.collection("usuarios")
         .doc(loginUser)
         .get()
-        .then((DocumentSnapshot value) {
+        .then((DocumentSnapshot value) async {
       if (value.exists) {
         var data = value.data();
         if (_progreso.read("contador") < data["contador"] || _progreso.read("contador") == null) {
-          _progreso.write("contador", data["contador"]);
+          await _progreso.write("contador", data["contador"]);
         }
-        else {}
       } else {
         print("Error al leer los datos desde Firebase, el documento no existe");
       }
     });
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => ContadorPage()),
+      MaterialPageRoute(builder: (context) => ContadorPage(_progreso.read("contador"))),
           (Route<dynamic> route) => false,
     );
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Se han cargado los datos de la nube."),
+          content: Text("Se han cargado los datos de la nube"),
           duration: Duration(seconds: 2),
         )
     );
